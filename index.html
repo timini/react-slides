@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>React.js 101</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
@@ -24,8 +24,139 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h3>React - why and what</h3>
+				</section>
+				<section>
+					<p>react is a single page application<br>your webserver just returns this:</p>
+					<pre><code>
+&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;React 101&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="root"&gt;&lt;/div&gt;
+  &lt;/body&gt;
+  &lt;script src="http://bucket.s3.amazonaws.com/react101.e53815e8c095e270c6560be1bb76a65d.js"
+&lt;/html&gt;
+					</code></pre>
+					<p>The rest is done by your javascript application</p>
+				</section>
+				<section>
+					<p>This means:
+					<ol>
+						<li>More responsive after initial load</li>
+						<li>No page refreshes when you navigate - javascript handles navigation changes</li>
+						<li>All data is fetched via REST APIs</li>
+					</ol>
+				</p>
+				</section>
+				<section>
+					<h2>RIP MVC</h2>
+					<p>architecture of popular javascript / SPA frameworks</p>
+					<ul>
+						<li>Ember.js - MVC</li>
+						<li>Angular.js - MVW(hatever)</li>
+						<li>React.js - just for views</li>
+					<ul>
+				</section>
+				<section>
+					<h5>React is just for views</h5>
+					<p>lots of choices for structuring your application</p>
+					<ul>
+						<li>redux - CQRS</li>
+						<li>MobX - observables</li>
+	,					<li>relay - redux + GraphQl</li>
+				</section>
+				<section>
+					<h4>So what is react then?</h4>
+					<pre><code>
+ReactDOM.render(
+  React.createElement('h1', {}, 'Hello, world!'),
+  document.getElementById('root')
+);
+</pre></code>
+<pre><code>
+// using jsx
+ReactDOM.render(
+  <h1>Hello, world!</h1>,
+  document.getElementById('root')
+);
+					</pre></code>
+				</section>
+					<section>
+					<pre><code>
+// defining your own components using ES6 classes
+ 
+class HelloWorld extends React.Component {
+  render() {
+    return <div>Hello {this.props.name}</div>;
+  }
+}
+ReactDOM.render(&lt;HelloMessage name="Jane" /&gt;, document.getElementById('root'));
+				</pre></code>
+				</section>
+				<section>
+					<p>Your whole app is a tree of components</p>
+<pre><code>
+import React, { Component } from 'react'
+import { Router, Route, Link } from 'react-router-dom'
+
+class Home extends Component {
+  render() { return (&lt;div&gt;&lt;h2&gt;this is the home page&lt;/h2&gt;&lt;/div&gt;)}
+}
+
+class About extends Component {
+  render() { return (&lt;div&gt;&lt;h2&gt;this is the about page&lt;/h2&gt;&lt;/div&gt;)}
+}
+
+const App extends Component {
+  render() {
+    return (&lt;Router&gt;
+      &lt;div&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;Link to="/"&gt;Home&lt;/Link&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;Link to="/about"&gt;About&lt;/Link&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;Route exact path="/" component={Home}/&gt;
+        &lt;Route path="/about" component={About}/&gt;
+      &lt;/div&gt;
+    &lt;/Router&gt;)
+  }
+}
+</pre></code>
+</section>
+<section>
+	<p>you can pass data (and functions) down the tree</p>
+<pre><code>
+class Home extends Component {
+  render() { return (&lt;div&gt;&lt;h2&gt;hi {this.props.name}!&lt;/h2&gt;&lt;/div&gt;)}
+}
+
+const App extends Component {
+  render() {
+    const homePage = &lt;Home name={'fred'}/&gt;;
+    return (&lt;Router&gt;
+      &lt;div&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;Link to="/"&gt;Home&lt;/Link&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;Link to="/about"&gt;About&lt;/Link&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;Route exact path="/" component={homePage}/&gt;
+        &lt;Route path="/about" component={About}/&gt;
+      &lt;/div&gt;
+    &lt;/Router&gt;)
+  }
+}
+</pre></code>
+</section>
+<section>
+	<p>SPAs do a lot of DOM manipulation - this becomes a bottleneck - virtual dom is the solution (lots of clever stuff)</p>
+	<p>instead of updating the DOM directly react has its own (virtual) dom which it updates</p>
+	<p>uses this to create a diff of the real DOM - minimise DOM changes</p>
+</section>
 			</div>
 		</div>
 
@@ -36,14 +167,37 @@
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
+			document.addEventListener("DOMContentLoaded", init, false);
+
+			function init() {
+				console.log("Run my init, yo!");
+
+				var cblocks = document.querySelectorAll("pre code");
+				console.log(cblocks)
+				if(cblocks.length) {
+					for(var i=0, len=cblocks.length; i<len; i++) {
+						var dom = cblocks[i];
+						var html = dom.innerHTML;
+						html = html.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+						dom.innerHTML = html;
+					}
+				}
+
+				// Full list of configuration options available here:
+				// https://github.com/hakimel/reveal.js#configuration
+				Reveal.initialize({
+					controls: true,
+					progress: true,
+					history: true,
+					center: true,
+					dependencies: [
+						{ src: 'plugin/markdown/marked.js' },
+						{ src: 'plugin/markdown/markdown.js' },
+						{ src: 'plugin/notes/notes.js', async: true },
+						{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+					]
+						});
+			}
 		</script>
 	</body>
 </html>
